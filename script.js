@@ -4,7 +4,7 @@ var CONTEXT;
 var SCOREBOARD;
 var Score = 0;
 
-var BlockSize = 40;
+var BlockSize = 20;
 var BlockBorder = 2;
 
 var WindowWidth = 400 + BlockBorder;
@@ -12,7 +12,7 @@ var WindowHeight = 400 + BlockBorder;
 
 var Food;
 var SnakeHead;
-var SnakeBody;
+var SnakeBody = [];
 
 
 
@@ -70,6 +70,25 @@ function PlayerMove(e) {
     }
 }
 
+function AutoSnakeMove() {
+    if (Food.Y < SnakeHead.Y) {
+        SnakeHead.XV = 0;
+        SnakeHead.YV = -1;
+    }
+    if (Food.Y > SnakeHead.Y) {
+        SnakeHead.XV = 0;
+        SnakeHead.YV = 1;
+    }
+    if (Food.X < SnakeHead.X) {
+        SnakeHead.XV = -1;
+        SnakeHead.YV = 0;
+    }
+    if (Food.X > SnakeHead.X) {
+        SnakeHead.XV = 1;
+        SnakeHead.YV = 0;
+    }
+}
+
 
 function updateGameSpace(){
 
@@ -78,14 +97,20 @@ function updateGameSpace(){
 
     for (var i = 0; i < WindowWidth; i+=BlockSize) {
         for (var j = 0; j < WindowHeight; j+=BlockSize) {
-            CONTEXT.fillStyle = "beige";
+            CONTEXT.fillStyle = "darkslategrey";
             CONTEXT.fillRect(i+BlockBorder,j+BlockBorder,BlockSize-BlockBorder,BlockSize-BlockBorder);
         }
     }
 
-    CONTEXT.fillStyle = "maroon";
-    CONTEXT.fillRect(Food.X+BlockBorder*6,Food.Y+BlockBorder*6,BlockSize/2-BlockBorder,BlockSize/2-BlockBorder);
-
+    for (var i = SnakeBody.length - 1; i > 0; i--) {
+        SnakeBody[i].X = SnakeBody[i-1].X;
+        SnakeBody[i].Y = SnakeBody[i-1].Y;
+    }
+    if(SnakeBody.length) {
+        SnakeBody[0].X = SnakeHead.X;
+        SnakeBody[0].Y = SnakeHead.Y;
+    }
+    AutoSnakeMove();
     SnakeHead.X += SnakeHead.XV * BlockSize;
     SnakeHead.Y += SnakeHead.YV * BlockSize;
 
@@ -93,9 +118,18 @@ function updateGameSpace(){
         Score += 1;
         updateScore();
         setFoodLocation();
+        SnakeBody.push({X: SnakeHead.X, Y: SnakeHead.Y});
     }
 
-    CONTEXT.fillStyle = "green";
+    CONTEXT.fillStyle = "greenyellow";
     CONTEXT.fillRect(SnakeHead.X+BlockBorder,SnakeHead.Y+BlockBorder,BlockSize-BlockBorder,BlockSize-BlockBorder);
+
+    for (var i = 0; i < SnakeBody.length; i++) {
+        CONTEXT.fillStyle = "greenyellow";
+        CONTEXT.fillRect(SnakeBody[i].X+BlockBorder,SnakeBody[i].Y+BlockBorder,BlockSize-BlockBorder,BlockSize-BlockBorder);
+    }
+
+    CONTEXT.fillStyle = "red";
+    CONTEXT.fillRect(Food.X+BlockBorder,Food.Y+BlockBorder,BlockSize-BlockBorder,BlockSize-BlockBorder);
 
 }

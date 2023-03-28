@@ -5,3 +5,7 @@ body {
 #GameSpace {
     background-color: black;
 }
+#ScoreBoard {
+    font-size: large;
+    font-weight: bold;
+}
